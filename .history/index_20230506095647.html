@@ -5,12 +5,13 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
+  <link rel="stylesheet" type="text/css" href="./css.css">
+  <style>
+    #content {
+  padding: 0 100px;
+}
+  </style>
 </head>
-<style>
-  #content {
-    padding: 0 100px;
-  }
-</style>
 <body>
   <div id="content" ></div>
 </body>
@@ -18,7 +19,6 @@
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script>
   const search = location.search
-  console.log(search)
   const path = search ? search.slice(1) : '/README.md'
   fetch(path).then(response => response.text()).then(markdown => {
     document.getElementById('content').innerHTML = marked.parse(markdown)

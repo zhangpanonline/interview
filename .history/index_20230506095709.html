@@ -18,7 +18,6 @@
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script>
   const search = location.search
-  console.log(search)
   const path = search ? search.slice(1) : '/README.md'
   fetch(path).then(response => response.text()).then(markdown => {
     document.getElementById('content').innerHTML = marked.parse(markdown)

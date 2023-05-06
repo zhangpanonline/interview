@@ -6,21 +6,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
 </head>
-<style>
-  #content {
-    padding: 0 100px;
-  }
-</style>
 <body>
   <div id="content" ></div>
 </body>
 </html>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script>
-  const search = location.search
-  console.log(search)
-  const path = search ? search.slice(1) : '/README.md'
-  fetch(path).then(response => response.text()).then(markdown => {
+  fetch('/md/css/README.md').then(response => response.text()).then(markdown => {
+    console.log(markdown)
     document.getElementById('content').innerHTML = marked.parse(markdown)
   })
 </script>
