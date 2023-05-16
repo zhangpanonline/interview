@@ -4,6 +4,31 @@
   <title>防止父元素高度坍塌最典型的四种方案</title>
 </head>
 <body>
-  
+  <h1>子元素浮动，父元素高度坍塌</h1>
+  <div class="p" >
+111
+    <div class="c1">222</div>
+    <div class="c2">333</div>
+  </div>
 </body>
 </html>
+<style>
+  .p {
+    border: 1px solid red;
+    outline: 1px solid green;
+    margin: 0;
+    /* overflow: hidden; */
+  }
+.c1 {
+  height: 100px;
+  /* float: right; */
+  margin: 0;
+  border: 1px solid #ccc;
+}
+.c2 {
+  height: 200px;
+  margin: 0;
+  float: left;
+  border: 1px solid #000;
+}
+</style>
