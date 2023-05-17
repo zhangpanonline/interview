@@ -5,27 +5,26 @@
 </head>
 <body>
   <h1>子元素浮动，父元素高度坍塌</h1>
-  <div class="p" >
-111
-    <div class="c1">222</div>
-    <div class="c2">333</div>
+  <div class="d1_p" >
+    <div class="d1_l">子元素</div>
+    <div class="d1_r">子元素</div>
   </div>
 </body>
 </html>
 <style>
-  .p {
+  .d1_p {
     border: 1px solid red;
     outline: 1px solid green;
     margin: 0;
-    /* overflow: hidden; */
+    float: left;
   }
-.c1 {
+.d1_l {
   height: 100px;
-  /* float: right; */
+  float: right;
   margin: 0;
   border: 1px solid #ccc;
 }
-.c2 {
+.d1_r {
   height: 200px;
   margin: 0;
   float: left;
