@@ -49,7 +49,7 @@
 
 
 
-## 2.1 什么是 BFC
+## 1.2 什么是 BFC
 
 > 为什么 `1.1` 里四种解决方案里的`overflow: hidden` 和給父元素设置 `float` 都会 *强制父元素包裹所有内部元素呢* ？
 
@@ -73,9 +73,10 @@
   > 2. 内部不影响外部
   > 3. 外部不影响内部
 
-## 2.2 两种渲染区域 （Formatting Context）
+## 1.3 两种渲染区域 （Formatting Context）
 
 其实，CSS中有2种渲染区域：块级元素渲染区域和行级元素渲染区域
 
-### 
+* 块级元素渲染区域：BFC (block fomatting context)
+* 行级元素渲染区域：IFC (inline formatting context)
 

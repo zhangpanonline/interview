@@ -4,30 +4,15 @@
   <title>防止父元素高度坍塌最典型的四种方案</title>
 </head>
 <body>
-  <h1>子元素浮动，父元素高度坍塌</h1>
-  <div class="d1_p" >
-    <div class="d1_l">子元素</div>
-    <div class="d1_r">子元素</div>
+  <div class="p" >
+    <div class="d1">子元素</div>
+    <div class="d2">子元素</div>
   </div>
 </body>
 </html>
 <style>
-  .d1_p {
-    border: 1px solid red;
-    outline: 1px solid green;
-    margin: 0;
-    float: left;
-  }
-.d1_l {
-  height: 100px;
-  float: right;
-  margin: 0;
-  border: 1px solid #ccc;
-}
-.d1_r {
-  height: 200px;
-  margin: 0;
-  float: left;
-  border: 1px solid #000;
+.p {
+  display: inline-block;
+  border: 1px solid red;
 }
 </style>
