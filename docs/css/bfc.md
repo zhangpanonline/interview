@@ -80,3 +80,16 @@
 * 块级元素渲染区域：BFC (block fomatting context)
 * 行级元素渲染区域：IFC (inline formatting context)
 
+## 1.4 BFC的布局规则
+
+* 默认，内部的块元素会在垂直方向，一个接一个地放置。每个块元素独占一行
+* 块元素垂直方向的总距离由边框内大小 + `margin` 共同决定
+* 属于同一个BFC的两个相邻块元素在垂直方向上的 `margin` 会发生重叠/合并。但水平方向的 `margin` 不会
+* 计算父元素BFC渲染区域的高度时，内部浮动元素的高度，都必须算在内
+
+## 1.5 四种情况会形成BFC渲染区域
+
+* `float` 的值不是 `none`
+* `position` 的值不是 `static` 或者 `relative`
+* `display` 的值是 `inline-block` 、`table-cell` 、`flex`、`table-caption` 或者 `inline-flex`
+* `overflow` 的值不是 `visible`
