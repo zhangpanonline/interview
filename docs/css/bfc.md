@@ -1,6 +1,6 @@
-﻿# 一、 `BFC`
+﻿#  `BFC`
 
-## 1.1 防止父元素高度坍塌最典型的四种方案
+## 一、防止父元素高度坍塌最典型的四种方案
 
 ### 问题重现：
 
@@ -49,7 +49,7 @@
 
 
 
-## 1.2 什么是 BFC
+## 二、什么是 BFC
 
 > 为什么 `1.1` 里四种解决方案里的`overflow: hidden` 和給父元素设置 `float` 都会 *强制父元素包裹所有内部元素呢* ？
 
@@ -73,25 +73,46 @@
   > 2. 内部不影响外部
   > 3. 外部不影响内部
 
-## 1.3 两种渲染区域 （Formatting Context）
+## 三、两种渲染区域 （Formatting Context）
 
 其实，CSS中有2种渲染区域：块级元素渲染区域和行级元素渲染区域
 
 * 块级元素渲染区域：BFC (block fomatting context)
 * 行级元素渲染区域：IFC (inline formatting context)
 
-## 1.4 BFC的布局规则【重要】 :heavy_exclamation_mark:
+## 四、BFC的布局规则【重要】 :heavy_exclamation_mark:
 
 * 默认，内部的块元素会在垂直方向，一个接一个地放置。每个块元素独占一行
 * 块元素垂直方向的总距离由边框内大小 + `margin` 共同决定
 * 属于同一个BFC的两个相邻块元素在垂直方向上的 `margin` 会发生重叠/合并。但水平方向的 `margin` 不会
 * 计算父元素BFC渲染区域的高度时，内部浮动元素的高度，都必须算在内
 
-## 1.5 四种情况会形成BFC渲染区域【重要】 :heavy_exclamation_mark:
+## 五、四种情况会形成BFC渲染区域【重要】 :heavy_exclamation_mark:
 
 * `float` 的值不是 `none`
+
 * `position` 的值不是 `static` 或者 `relative`
+
 * `display` 的值是 `inline-block` 、`table-cell` 、`flex`、`table-caption` 或者 `inline-flex`
+
 * `overflow` 的值不是 `visible` 、`clip` 的块元素
 
+  > `overflow` 的 `hidden` 和 `clip` 属性区别：
+  >
+  > 1. 都以元素的边距（padding）盒进行裁剪，并且禁止内容滚动，但是 `hidden` 可以以编程形式进行滚动（`scrollLeft``scrollTo()`），所以 `hidden` 形成还是一个股东容器，但 `clip` 不是滚动容器
+  > 2. `hidden` 会形成 `BFC`，而 `clip` 不会
+
 更多创建块格式化上下文参见：[块格式化上下文](https://developer.mozilla.org/zh-CN/docs/Web/Guide/CSS/Block_formatting_context)
+
+## 六、BFC 可以解决哪些问题
+
+### 1. 避免垂直方向 margin 合并
+
+解决方法：
+
+1. 用一个外围块元素包裹上方或下方元素
+2. 給外围元素设置 `overflow: hidden` 使其形成 `BFC`
+
+原理：
+
+1. 新外层元素，变成一个BFC

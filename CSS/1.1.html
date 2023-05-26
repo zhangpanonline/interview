@@ -4,21 +4,26 @@
   <title></title>
 </head>
 <body>
-  <span class="p" >
-    父元素
-  </span>
+  <div class="w" >
+    <div class="t" ></div>
+  </div>
+  <div class="b"></div>
 </body>
 </html>
 <style>
-* {
-  list-style: none;
+.t, .b {
+  width: 100px;
+  height: 100px;
+  border: 1px solid red;
 }
-.p {
-  outline: 5px solid green;
-  overflow: hidden;
+.w {
+  display: table-cell;
 }
-span {
-  float: left;
-  white-space: wrap;
+.t {
+  margin-bottom: 100px;
+}
+.b {
+  border-color: green;
+  margin-top: 100px;
 }
 </style>
