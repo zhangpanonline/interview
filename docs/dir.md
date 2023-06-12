@@ -28,3 +28,95 @@
     </details>
 </details>
 
+<details>
+    <summary>2. POST和PUT请求的区别</summary>
+    <details>
+    	<summary>PUT 请求：</summary>
+        PUT请求是向服务器端发送数据，从而修改数据的内容，但是不会增加数据的种类等，也就是说无论进行多少次PUT操作，其结果并没有不同。（可以理解为时更新数据）
+    </details>
+    <details>
+    	<summary>POST请求：</summary>
+        POST请求是向服务器端发送数据，该请求会改变数据的种类等资源，它会创建新的内容。（可以理解为是创建数据）
+    </details>
+</details>
+
+<details>
+    <summary>3. 为什么post请求会发送两次请求?</summary>
+    <p>
+        1.第一次请求为options预检请求，状态码为:204	
+    </p>	
+	<p>
+        作用：
+    </p>
+		<p>
+            作用1: 询问服务器是否支持修改的请求头，如果服务器支持，则在第二次中发送真正的请求
+    	</p>
+		<p>
+            作用2: 检测服务器是否为同源请求,是否支持跨域
+    	</p>
+	<p>
+        2.第二次为真正的post请求
+    </p>
+</details>
+
+<details>
+    <summary>4. 常见的HTTP请求头和响应头</summary>
+    <h5>HTTP Request Header</h5>
+    <p>
+        Accept：浏览器能够处理的内容类型
+    </p>
+    <p>
+        Accept-Charset：浏览器能够显示的字符集
+    </p>
+    <p>
+        Accept-Encoding：浏览器能够处理的压缩编码
+    </p>
+    <p>
+        Accept-Language：浏览器当前设置的语言
+    </p>
+    <p>
+        Connection：浏览器与服务器之间连接的类型
+    </p>
+    <p>
+        Cookie：当前页面设置的任何 Cookie
+    </p>
+    <p>
+        Host：发出请求的页面所在的域
+    </p>
+    <p>
+        Referer：发出请求的页面的 URL
+    </p>
+    <p>
+        User-Agent：浏览器的用户代理字符串
+    </p>
+    <h5>HTTP Responses Header</h5>
+    <P>
+        Date：表示消息发送的时间，时间的描述格式由rfc822定义
+    </P>
+    <p>
+        server：服务器名称
+    </p>
+    <p>
+        Connection：浏览器与服务器之间连接的类型
+    </p>
+    <p>
+        Cache-Control：控制HTTP缓存
+    </p>
+    <p>
+        content-type：表示后面的文档属于什么 MIME 类型
+    </p>
+    <h5>Content-Type</h5>
+    <h6>常见的 Content-Type 属性值有以下四种：</h6>
+    <p>
+        1. application/x-www-form-urlencoded：浏览器的原生 from 表单，如果不设置 enctype 属性，那么最终就会以 application/x-www-form-urlencoded 方式提交数据。该种方式提交的数据放在 body 里面，数据按照 key1=val1&key2=val2 的方式进行编码，key 和 val 都进行了 URL 转码
+    </p>
+    <p>
+        2. multipart/form-data：该种方式也是一个常见的 POST 提交方式，通常表单上传文件时使用该种方式
+    </p>
+    <p>
+        3. application/json：服务器消息主体是序列化后的 JSON 字符串
+    </p>
+    <p>
+        4. text/xml：该种方式主要用来提交 XML 格式的数据
+    </p>
+</details>
