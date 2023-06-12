@@ -591,9 +591,35 @@ header, .context-menu, .megamenu-content, footer{
 
 
 
-</style><title>README</title>
+</style><title>dir</title>
 </head>
 <body class='typora-export os-windows'><div class='typora-export-content'>
-<div id='write'  class=''><h1 id='interview'><span>interview</span></h1><p><a href='/docs/dir.html'><span>dir</span></a></p><h2 id='css-部分'><span>CSS 部分</span></h2><ul><li><p><a href='/docs/css/bfc.html'><span>1. BFC</span></a></p></li></ul><p><span>面向对象三大特点：</span></p><ul><li><p><span>封装</span></p></li><li><p><span>继承</span></p></li><li><p><span>多态</span></p></li></ul><p><span>学习方法：</span></p><blockquote><p><span>一边学习一边输出，才是最佳学习方法</span></p></blockquote><ol start='' ><li><p><span>上课认真学习</span></p><p><span>认真学习课上所讲笔试题的精髓和原理</span></p></li><li><p><span>输出技术文章</span></p><p><span>将自己对面试题的理解写成文章。写文章的过程，反复推敲，琢磨，才是把知识真正转为自己所有的过程</span></p></li><li><p><span>为面试加码</span></p><p><span>简历里，写上自己技术社区主页的地址。有过优秀文章输出的人，更容易得到面试官的青睐</span></p></li><li><p><span>兼职副业</span></p><p><span>日积月累，没准还能形成自己的兼职副业。在工资之外再添加一份收入的惊喜。</span></p></li></ol></div></div>
+<div id='write'  class=''><h1 id='浏览器网络'><span>浏览器网络</span></h1><details>
+    <summary>1. GET和POST的请求的区别</summary>
+    <details>
+    	<summary>应用场景</summary>
+            (GET 请求是一个幂等的请求)一般 Get 请求用于对服务器资源不会产生影响的场景，比如说请求一个网页的资源。(而 Post 不是一个幂等的请求)一般用于对服务器资源会产生影响的情景，比如注册用户这一类的操作。（幂等是指一个请求方法执行多次和仅执行一次的效果完全相同）
+    </details>
+    <details>
+    	<summary>是否缓存</summary>
+            因为两者应用场景不同，浏览器一般会对 Get 请求缓存，但很少对 Post 请求缓存
+    </details>
+    <details>
+    	<summary>传参方式不同</summary>
+            Get 通过查询字符串传参，Post 通过请求体传参
+    </details>
+    <details>
+    	<summary>安全性</summary>
+             Get 请求可以将请求的参数放入 url 中向服务器发送，这样的做法相对于 Post 请求来说是不太安全的，因为请求的 url 会被保留在历史记录中
+    </details>
+    <details>
+    	<summary>请求长度</summary>
+             浏览器由于对 url 长度的限制，所以会影响 get 请求发送数据时的长度。这个限制是浏览器规定的，并不是 RFC 规定的
+    </details>
+    <details>
+    	<summary>参数类型</summary>
+             get参数只允许ASCII字符，post 的参数传递支持更多的数据类型(如文件、图片)
+    </details>
+</details><p>&nbsp;</p></div></div>
 </body>
 </html>
