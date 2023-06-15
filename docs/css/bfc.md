@@ -99,7 +99,7 @@
 
   > `overflow` 的 `hidden` 和 `clip` 属性区别：
   >
-  > 1. 都以元素的边距（padding）盒进行裁剪，并且禁止内容滚动，但是 `hidden` 可以以编程形式进行滚动（`scrollLeft``scrollTo()`），所以 `hidden` 形成还是一个股东容器，但 `clip` 不是滚动容器
+  > 1. 都以元素的边距（padding）盒进行裁剪，并且禁止内容滚动，但是 `hidden` 可以以编程形式进行滚动（`scrollLeft``scrollTo()`），所以 `hidden` 形成还是一个滚动容器，但 `clip` 不是滚动容器
   > 2. `hidden` 会形成 `BFC`，而 `clip` 不会
 
 更多创建块格式化上下文参见：[块格式化上下文](https://developer.mozilla.org/zh-CN/docs/Web/Guide/CSS/Block_formatting_context)
@@ -137,3 +137,36 @@
 1. 即不隐藏内容
 2. 又不添加新元素
 3. 又不影响高度
+
+
+
+### 2. 避免垂直方向 margin 溢出
+
+**问题重现**：子元素设置 margin-top，会超出父元素上边的范围，变成父元素的 margin-top，而实际上，子元素与父元素之间，依然是没有 margin-top 的，效果不是想要的
+
+**五种解决方法：**
+
+1. 设置父元素 `overflow:hidden`
+
+   * 原理：父元素想成 BFC，就必须包裹内层子元素的 margin
+   * 缺点：有的子元素，希望在溢出父元素时进行展示，就无法实现了
+
+2. 为父元素添加上边框，颜色设置为透明
+
+   * 原理：这里不是 bfc，而是因为边框本身可以阻隔 margin 溢出
+   * 缺点：边框会增大父元素的实际大小，导致布局错乱
+   * 解决：可以设置父元素 `box-sizing: border-box`
+   
+
+3. 用父元素的 padding-top 代替第一个子元素的 margin-top
+   * 原理：这里也不是 bfc。而是因为 padding 本身可以阻隔 margin 溢出
+   * 缺点：对父元素高度有影响
+   * 解决：可以设置父元素 `box-sizing: border-box`
+4. 在父元素内第一个子元素之前添加一个空的 `<table></table>`
+   * 原理：table 的 display 属性默认相当于 table，所以形成小的 bfc 渲染区域。其他元素的 margin 不能进入 table 范围内。就阻隔了  margin 向上溢出
+   * 优点：空table元素没有大小，不占用父元素控件
+   * 缺点：增加一个看不见的空元素，干扰查找元素
+5. 最好的解决：`父元素::before { content: ''; display: table; }`
+   * 优点：即不隐藏内容，又不添加新元素，又不影响高度
+
+   
