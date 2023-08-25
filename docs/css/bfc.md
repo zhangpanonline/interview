@@ -157,7 +157,6 @@
    * 缺点：边框会增大父元素的实际大小，导致布局错乱
    * 解决：可以设置父元素 `box-sizing: border-box`
    
-
 3. 用父元素的 padding-top 代替第一个子元素的 margin-top
    * 原理：这里也不是 bfc。而是因为 padding 本身可以阻隔 margin 溢出
    * 缺点：对父元素高度有影响
@@ -169,4 +168,29 @@
 5. 最好的解决：`父元素::before { content: ''; display: table; }`
    * 优点：即不隐藏内容，又不添加新元素，又不影响高度
 
-   
+
+### 3. 左定宽，右自适应布局
+
+第一步：左边定宽元素左浮动 `.left { float: left; width: 固定宽度 }`
+
+第二步：右边元素不用右浮动，而是： `.right { overflow: hidden; }`
+
+原理：右边元素 `overflow: hidden` 后，形成 `BFC` 渲染区域。左边的 float 元素就不能进入右边范围了
+
+```html
+<div class="l" >l</div>
+<div class="r" ></div>
+.l {
+  float: left;
+  width: 200px;
+  background-color: gray;
+  height: 100vh;
+}
+.r {
+  background-color: #ccc;
+  height: 100vh;
+  overflow: hidden;
+}
+```
+
+# 弹性布局
