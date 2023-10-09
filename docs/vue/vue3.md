@@ -162,7 +162,7 @@ script setup 是在单文件组件（SFC）中使用组合式 API 的语法糖�
 
 不用写 export default {}，子组件只需要import进来就可以直接使用，不用注册，属性和方法也不用return。
 
-并且里面不需要用 async 就可以直接使用 await，可以直接调用：defineProps、defineEmits、definedExpose、useSlost、useAttrs。
+并且里面不需要用 async 就可以直接使用 await，可以直接调用：defineProps、defineEmits、definedExpose、useSlots、useAttrs。
 
 ### 8. reactive、shallowReactive 函数
 
