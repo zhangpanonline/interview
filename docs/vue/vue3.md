@@ -35,7 +35,7 @@
 * `onActivated()`：被激活时执行
 * `onDeactivated()`比如从 `A` 组件切换到 `B` 组件，`A`组件消失时执行
 
-#### 1.6 除此之外，还存其他的不同，例如 `父子传参不同`，子组件通过 `defineProps()` 进行接收，通过`defineEmits()` 向父组件派发事件等
+#### 1.6 除此之外，还存在其他的不同，例如 `父子传参不同`，子组件通过 `defineProps()` 进行接收，通过`defineEmits()` 向父组件派发事件等
 
 #### 总结：`vue3` 性能更高，体积更小，更利于复用，代码维护更方便
 
@@ -126,7 +126,7 @@
        <h1 @click="say()">{{msg}}</h1>
      </div>
    </template>
-   
+
    <script>
    export default {
      setup (props,context) {
@@ -145,7 +145,7 @@
        context.emit
        // 暴露公共 property (函数)
        context.expose
-   
+
        return { msg , say}
      },
      beforeCreate() {
@@ -382,7 +382,7 @@ vite在启动的时候不需要打包，所以不用分析模块与模块之间�
    <son :model-value="money" @update:modelValue="val => money = val" />
    // 语法糖写法
    <son v-model="money" v-model:house="house" />
-       
+
    // 子组件
    <button @click="$emit('update:modelValue', modelValue + 100)">Click Me</button>
    ```
@@ -395,5 +395,5 @@ vite在启动的时候不需要打包，所以不用分析模块与模块之间�
 
 
 
-   
+
 
