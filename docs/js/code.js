@@ -3,7 +3,7 @@
 /* eslint-disable no-unused-vars */
 
 // 1. Object.create() 静态方法以一个现有对象作为原型，创建一个新对象
-function create(obj) {
+function myObjectCreate(obj) {
   function F() { }
   F.prototype = obj
   return new F()
@@ -25,6 +25,7 @@ function myInstanceof(left, right) {
 //  2. 为步骤 1 新创建的对象添加属性 __proto__，将该属性链接至构造函数的原型对象
 //  3. 将步骤 1 新创建的对象作为 this 的上下文
 //  4. 如果该函数没有返回对象，则返回 this
+// https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/new
 function myNew(fn, ...args) {
   const obj = Object.create(fn.prototype)
   const result = fn.apply(obj, args)
@@ -133,12 +134,26 @@ Function.prototype.myApply = function(ctx, args) {
 }
 
 // 8. bind() 方法创建一个新的函数，在 bind() 被调用时，这个新函数的 this 被指定为 bind() 的第一个参数，而其余参数将作为新函数的参数，供调用时使用。
-Function.prototype.myBind = function(ctx, ...args) {
+// https://www.bilibili.com/video/BV1uN411u7GP/?spm_id_from=trigger_reload&vd_source=f61b6d4783ca5180c121fd742a088566
+Function.prototype.myBind = function (ctx) {
   if (typeof this !== 'function') {
     throw new Error('type error')
   }
-  return function() {
-    return this.apply(ctx, ...args)
+  const args = Array.prototype.slice.call(arguments, 1)
+  const srcFn = this
+  return function A() {
+    const list = args.concat(Array.prototype.slice.call(arguments))
+    if (A.prototype === Object.getPrototypeOf(this)) {
+    // if (new.target) {
+      // return new srcFn(...list)
+      const obj = {}
+      Object.setPrototypeOf(obj, srcFn.prototype)
+      const result = srcFn.apply(obj, list)
+      return result || obj
+    } else {
+      // 返回值要和原函数一致
+      return srcFn.apply(ctx, list)
+    }
   }
 }
 
@@ -220,3 +235,136 @@ function randomArr() {
 
 // 14. 实现数组扁平化
 
+// 15. 深度克隆
+{
+  const cache = new WeakMap()
+  function deepClone(value) {
+    if (typeof value !== 'object' || value === null) {
+      return value
+    }
+    const cached = cache.get(value)
+    if (cached) return cached
+    const result = Array.isArray(value) ? [] : {}
+    Object.setPrototypeOf(result, Object.getPrototypeOf(value))
+    cache.set(value, result)
+    for (const key in value) {
+      if (Object.hasOwn(value, key)) {
+        result[key] = deepClone(value[key])
+      }
+    }
+    return result
+  }
+}
+
+// 16.1 消除异步的传染性
+{
+  function run(func) {
+    // 改动环境
+    const cache = {
+      status: 'pending',
+      value: null
+    }
+    const oldFetch = window.fetch
+    window.fetch = function(...args) {
+      if (cache.status === 'fulfilled') {
+        return cache.value
+      } else if (cache.status === 'rejected') {
+        throw new Error(cache.value)
+      }
+      // 1. 发送真实请求
+      const prom = oldFetch(...args).then(res => res.text()).then(res => {
+        cache.status = 'fulfilled'
+        cache.value = res
+      }, err => {
+        cache.status = 'rejected'
+        cache.value = err
+      })
+      // 2. 抛出错误
+      throw prom
+    }
+    // 执行入口函数
+    try {
+      func()
+    } catch (err) {
+      // 要确保第一次请求完成值后，再发送第二次请求，这里的 err 为上面的 prom
+      if (err instanceof Promise) {
+        err.then(func, func).finally(() => {
+          window.fetch = oldFetch
+        })
+      }
+    }
+  }
+  run(main)
+  function main() {
+    const res = fetch('https://duyi-static.oss-cn-beijing.aliyuncs.com/files/novel.txt')
+    console.log(res)
+  }
+}
+
+// 16.2 消除异步的传染性，使用定时器模拟
+{
+  function run(func) {
+    const cache = {
+      done: 'pending',
+      value: null
+    }
+    const oldApi = window.asyncApi
+    window.asyncApi = function() {
+      if (cache.done === 'success') {
+        return cache.value
+      }
+      const proms = oldApi().then(res => {
+        cache.done = 'success'
+        cache.value = res
+      })
+      throw proms
+    }
+
+    try {
+      func()
+    } catch (error) {
+      if (error instanceof Promise) {
+        error.then(func, func).finally(() => {
+          console.log(window.asyncApi, 1)
+          window.asyncApi = oldApi
+          console.log(window.asyncApi, 2)
+        })
+      }
+    }
+  }
+  run(main)
+  function main() {
+    const res = asyncApi()
+    console.log(res)
+  }
+
+  function asyncApi() {
+    return new Promise(resolve => {
+      setTimeout(() => {
+        resolve('3')
+      }, 5000);
+    })
+  }
+}
+
+// 17. 分片请求加载
+{
+  loadNovel()
+  async function loadNovel() {
+    const url = 'https://duyi-static.oss-cn-beijing.aliyuncs.com/files/novel.txt'
+    const res = await window.fetch(url)
+    const reader = res.body.getReader()
+    const decoder = new TextDecoder()
+    // for(;;) {
+    //   const { value, done } = await reader.read()
+    //   if (done) break
+    //   console.log(decoder.decode(value))
+    // }
+    reader.read().then(fn)
+    async function fn({ value, done }) {
+      if (done) return
+      console.log(decoder.decode(value))
+      reader.read().then(fn)
+    }
+  }
+}

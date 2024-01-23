@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>手写 JavaScript 代码</title>
+</head>
+<body>
+</body>
+</html>
+
+<script>
+loadNovel()
+async function loadNovel() {
+  const url = 'https://duyi-static.oss-cn-beijing.aliyuncs.com/files/novel.txt'
+  const res = await window.fetch(url)
+  const reader = res.body.getReader()
+  const decoder = new TextDecoder()
+  // for(;;) {
+  //   const { value, done } = await reader.read()
+  //   if (done) break
+  //   console.log(decoder.decode(value))
+  // }
+  reader.read().then(fn)
+  async function fn({ value, done }) {
+    if (done) return
+    console.log(decoder.decode(value))
+    reader.read().then(fn)
+  }
+}
+</script>
