@@ -77,9 +77,29 @@ Plugin 可以扩展webpack的功能，让webpack具有更多的灵活性。在we
 
 ### 6. 用过哪些 Loader?
 
+### 7. 打包效率
+量化：`speed-measure-webpack-plugin`
+缩小转译范围：`exclude/include`
+缓存技术：`cache-loader`
+并行处理：`Happypack`
+`noparse`：
+> 如果一些第三方模块没有 AMD/CommonJS 规范版本，可以使用 noParse 来标识这个模块，这样 Webpack 会引入这些模块，但是不进行转化和解析，从而提升 Webpack 的构建性能，例如：jquery、lodash
+```js
+module.exports = {
+   module: {
+      noParse: /jquery|lodash/
+   }
+}
+```
+`scope hosting` 作用域提升
 
-
-
+### 8 提高页面性能
+* 压缩代码：删除多余的代码、注释、简化代码的写法等方式。可以利用 webpack 的 UglifyJsPlugin 和 ParallelUglifyPlugin 来压缩 JS 文件，利用 cssnano（css-loader?minimize）来压缩 css
+* 利用 CDN 加速：在构建过程中，将引用的静态资源路径修改为CDN上对应的路径。可以利用webpack对于output参数和各loader的publicPath 参数来修改资源路径
+* Tree Shaking：（前提是静态加载）将代码中永远不会走的片段删掉。可以通过在启动 webpack 时追加参数 --optimize-minimize 来实现
+* Code Splitting：将代码按路由维度或者组件分块（chunk），这样做到按需加载，同时可以充分利用浏览器缓存
+* 提取公共第三方库：SplitChunksPlugin插件来进行公共模块抽取，利用浏览器缓存可以长期缓存这些无需频繁变动的公共代码
+* scope hosting 作用域提升：变量提升，可以减少一些变量声明。在生产环境下，默认开启
 
 
 

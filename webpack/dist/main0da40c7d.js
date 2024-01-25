@@ -1,0 +1,1 @@
+(()=>{"use strict";console.log(6),console.log("hello raw loader")})();
