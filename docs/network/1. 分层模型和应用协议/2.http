@@ -1,0 +1,10 @@
+POST /upload/single HTTP/1.1
+Host: localhost:9527
+Content-Type: multipart/form-data; boundary=aaa
+
+--aaa
+Content-Disposition: form-data; name="avatar"; filename="1.png"
+Content-Type: image/png
+
+< ./1.png
+--aaa--

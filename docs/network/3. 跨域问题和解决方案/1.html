@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      fetch('https://study.duyiedu.com/api/user/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          loginId: 'admin1',
+          loginPwd: '123123',
+        }),
+      })
+        .then((resp) => {
+          console.log(resp.headers.get('authorization'));
+          return resp.json();
+        })
+        .then((body) => {
+          console.log(body);
+        });
+      // fetch('https://pvp.qq.com/web201605/js/herolist.json')
+      //   .then((resp) => resp.json())
+      //   .then((body) => {
+      //     console.log(body);
+      //   });
+      // fetch('https://study.duyiedu.com/api/herolist')
+      //   .then((resp) => resp.json())
+      //   .then((body) => {
+      //     console.log(body);
+      //   });
+    </script>
+  </body>
+</html>

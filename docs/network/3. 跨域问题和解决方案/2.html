@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      function request(url) {
+        return new Promise((resolve) => {
+          const cbName =
+            '__callback__' +
+            Math.random().toString(36).substring(2) +
+            '_' +
+            Date.now();
+          window[cbName] = function (resp) {
+            delete window[cbName];
+            script.remove();
+            resolve(resp);
+          };
+          const script = document.createElement('script');
+          script.src = url + '?callback=' + cbName;
+          document.body.appendChild(script);
+        });
+      }
+
+      request('http://localhost:9527/jsonp').then((resp) => {
+        console.log('server', resp);
+      });
+    </script>
+  </body>
+</html>

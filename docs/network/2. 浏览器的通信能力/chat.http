@@ -1,0 +1,7 @@
+POST /chat HTTP/1.1
+Host: myserver.com:7010
+Content-Type: application/json
+
+{
+  "clear": true
+}

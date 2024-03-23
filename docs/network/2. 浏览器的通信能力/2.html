@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <form action="https://study.duyiedu.com/api/user/login" method="POST">
+      <p>
+        账号：
+        <input type="text" name="loginId" />
+      </p>
+      <p>
+        密码：
+        <input type="text" name="loginPwd" />
+      </p>
+      <button type="submit">提交</button>
+    </form>
+
+    <script>
+      const form = document.querySelector('form');
+      form.onsubmit = (e) => {
+        // e.preventDefault();
+        console.log('submit');
+      };
+    </script>
+  </body>
+</html>
