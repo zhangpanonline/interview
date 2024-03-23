@@ -368,3 +368,31 @@ function randomArr() {
     }
   }
 }
+
+/**
+ * 18. 终止请求
+ * https://developer.mozilla.org/zh-CN/docs/Web/API/AbortController/abort
+ * 使用 AbortController() 构造函数创建一个 controller，然后使用 AbortController.signal 属性获取到它关联的 AbortSignal 对象的引用。
+ * 当 fetch 请求初始化时，我们将 AbortSignal 作为一个选项传递进入请求的选项对象中（下面的 {signal}）。
+ * 这将 signal 和 controller 与 fetch 请求相关联，并且允许我们通过调用 AbortController.abort() 去中止它，如下面的第二个事件监听器。
+ * 
+ * AbortSignal 接口表示一个信号对象（signal object），它允许你通过 AbortController 对象与 DOM 请求（如 Fetch）进行通信并在需要时将其中止。
+ */
+{
+  const controller = new AbortController()
+  const signal = controller.signal
+
+  const url = "video.mp4";
+  const downloadBtn = document.querySelector(".download");
+  const abortBtn = document.querySelector(".abort");
+  
+  downloadBtn.addEventListener("click", fetchVideo);
+
+  abortBtn.addEventListener('click', () => {
+    controller.abort() // 取消请求
+  })
+
+  function fetchVideo() {
+    fetch(url, { signal }).then(res => {}).catch(err => {})
+  }
+}

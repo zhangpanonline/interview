@@ -1,0 +1,17 @@
+{
+    "editor.tabSize": 2,
+    "editor.formatOnSave": true,
+    "editor.formatOnType": true,
+    "eslint.trace.server": "verbose",
+    "editor.fontSize": 18,
+    "editor.lineHeight": 26, //设置文字行高
+    "editor.lineNumbers": "on", //开启行数提示
+    "prettier.printWidth": 500,
+    "editor.quickSuggestions": {
+      //开启自动显示建议
+      "other": true,
+      "comments": true,
+      "strings": true
+    },
+  }
+  
