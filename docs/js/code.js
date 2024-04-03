@@ -396,3 +396,15 @@ function randomArr() {
     fetch(url, { signal }).then(res => {}).catch(err => {})
   }
 }
+
+/**
+ * 19. 判断是否为数组
+ */
+{
+  const arr = []
+  Array.isArray(arr); // true
+  Object.prototype.toString.call(arr); // '[object Array]'
+  arr instanceof Array; // true
+  Object.getPrototypeOf(arr) === Array.prototype; // true
+  arr.__proto__ === Array.prototype; // true
+}
