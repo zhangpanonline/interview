@@ -467,3 +467,168 @@ _update 函数首先会给组件的 _vnode 属性重新赋值，让它指向新�
 
 5. **运行生命周期钩子函数`updated`**
 
+# 8. computed 和 methods 有什么区别？
+
+**标准而浅显的回答：**
+
+1. 在使用时，computed 当做属性使用，而methods则当做方法调用
+2. computed 可以具有 getter 和 setter，因此可以赋值，而 methods 不行
+3. computed 无法接收多个参数，而 methods 可以
+4. computed 具有缓存，而methods没有
+
+**更接近底层原理的回答：**
+
+vue 对 methods 的处理比较简单，只需要遍历 methods 配置中的每个属性，将其对应的函数使用 bind 绑定当前组件实例后复制其引用到组件实例中即可。
+
+而 vue 对 computed 的处理会稍微复杂一些：
+
+当组件实例触发生命周期函数 `beforeCreate` 后，它会做一系列事情，其中就包括对 computed 的处理。
+
+它会遍历 computed 配置中的所有属性，为每一个属性创建一个 Watcher 对象，并传入一个函数，该函数的本质其实就是 computed 配置中的 getter，这样一来，getter 运行过程中就会收集依赖。
+
+但是和渲染函数不同，为计算属性创建的 Watcher 不会立即执行，因为要考虑到该计算属性是否会被渲染函数使用，如果没有使用，就不会得到执行。因此，在创建 Watcher 的时候，它使用了lazy 配置，lazy 配置可以让 Watcher 不会立即执行。
+
+受到`lazy`的影响，Watcher 内部会保存两个关键属性来实现缓存，一个是`value`，一个是`dirty`。
+
+`value`属性用于保存 Watcher 运行的结果，受`lazy`的影响，该值在最开始是`undefined`。
+
+`dirty`属性用于指示当前的 `value` 是否已经过时了，即是否为脏值，受 `lazy` 的影响，该值在最开始是 `true`。
+
+Watcher 创建好后，vue 会使用代理模式（`Object.definePrototype`），将计算属性挂载到组件实例中。
+
+当读取计算属性时，vue 检查其对应的 Watcher 是否为脏值，如果是，则运行函数，计算依赖，并得到对应的值，保存在 Watcher 的 value 中，然后设置 dirty 为 false，然后返回。
+
+如果 dirty 为 false，则直接返回 watcher 的 value。
+
+巧妙的是，在依赖收集时，被依赖的数据不仅会收集到计算属性的 Watcher ，还会收集到组件的 Watcher。
+
+当计算属性的依赖变化时，会先触发计算属性的 Watcher 执行，因此，它只需设置 `dirty` 为 true 即可，不做任何处理。
+
+由于依赖同时会收集到组件的 Watcher，因此组件会重新渲染，而重新渲染时又读取到了计算属性，由于计算属性目前dirty 为，因此会重新运行 getter 进行运算。
+
+而对于计算属性的 setter，则极其简单，当设置计算属性时，直接运行 setter 即可。
+
+# 9. 优化
+
+## 使用 key
+
+对于通过循环生成的列表，应给每个列表项一个稳定且唯一的key，这有利于在列表变动时，尽量少的删除、新增、改动元素。
+
+## 使用冻结的对象
+
+```js
+var obj = {a: 1, b: 2}
+Object.freeze(obj)
+```
+
+冻结的对象（通过 `Object.isFreeze` 判断）不会被响应化。
+
+## 使用函数式组件
+
+```vue
+<template functional>
+	<h1>
+        NormalComp: {{ props.count }}
+    </h1>
+</template>
+<script>
+export default {
+    functional: true,
+    props: {
+        count: Number,
+    }
+}
+</script>
+```
+
+## 使用计算属性
+
+如果模板中某个数据会使用多次，并且该数据是通过计算得到的，使用计算属性以缓存他们。
+
+## 非实时绑定的表单项
+
+当使用 v-model 绑定一个表单项时，当用户改变表单项的状态时，也会随之改变数据，从而导致 vue 发生重渲染，这会带来一些性能的开销。
+
+特别是当用户改变表单项时，页面有一些动画正在进行中，由于JS执行线程和浏览器渲染线程是互斥的，最终会导致动画出现卡顿。
+
+我们可以通过使用 lazy 或不使用 v-model 的方式解决该问题，但要注意，这样可能会导致在某一个时间段内数据和表单项的值是不一致的。
+
+## 保持对象引用稳定
+
+在绝大部分情况下，`vue` 触发 `rerender ` 的时机是其依赖的数据发生**变化**。
+
+若数据没有发生变化，哪怕给数据重新赋相同的值了，`vue` 也是不会做出任何处理的。
+
+下面是 `vue` 判断数据 **没有变化** 的源码：
+
+```js
+// value 为旧值，newVal 为新值
+if (newVal === value || (newVal !== newVal && value !== value)) {
+    return
+}
+```
+
+因此，如果需要，只要能保证组件的依赖数据不发生变化，组件就不会重新渲染。
+
+对于原始数据类型，保持其值不变即可；
+
+对于对象类型，保持其引用不变即可。
+
+从另一方面来说，由于可以通过保持属性引用稳定来避免子组件的渲染，那么我们应该细分组件来尽量避免多余的渲染。
+
+## 使用 v-show 替代 v-if
+
+对于频繁切换显示状态的元素，使用 v-show 可以保证虚拟 dom 树的稳定，避免频繁的新增和删除元素，特别是对于那些内部包含大量 dom 元素的节点，这一点极其重要。
+
+关键字：频繁切换显示状态、内部包含大量 dom 元素。
+
+## 使用延迟装载（defer）
+
+
+
+首页白屏时间主要受到两个因素的影响：
+
+- 打包体积过大
+
+  巨型包需要消耗大量的传输时间，导致JS传输完成前页面只有一个`<div>`，没有可显示的内容。
+
+- 需要立即渲染的内容太多
+
+  JS传输完成后，浏览器开始执行JS构造页面。
+
+  但可能一开始要渲染的组件太多，不仅JS执行的时间很长，而且执行完成后浏览器要渲染的元素过多，从而导致页面白屏。
+
+打包体积过大需要自行优化打包体积，**如何优化？？？**
+
+渲染内容太多，一个可行的办法就是**延迟装载组件**，让组件按照指定的先后顺序依次一格一格渲染出来。
+
+> 延迟装载是一个思路，本质上就是利用 `requestAnimationFrame` 事件分批渲染内容，它的具体实现多种多样。
+>
+> ```js
+> export default function(maxFrameCount) {
+>     return {
+>         data() {
+>             return {
+>                 frameCount: 0
+>             }
+>         },
+>         mounted() {
+>             const refreshFrameCount = () => {
+>                 requestAnimationFrame(() => {
+>                     this.frameCount++;
+>                     if (this.frameCount < maxFrameCount) {
+>                         refreshFrameCount();
+>                     }
+>                 })
+>             }
+>             refreshFrameCount();
+>         },
+>         methods: {
+>             defer(showInFrameCount) {
+>                 return this.frameCount >= showInFrameCount;
+>             }
+>         }
+>     }
+> }
+> ```
+
