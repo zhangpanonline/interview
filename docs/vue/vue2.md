@@ -632,3 +632,176 @@ if (newVal === value || (newVal !== newVal && value !== value)) {
 > }
 > ```
 
+# 10. 请阐述 keep-alive 组件的作用和原理（性能优化）
+
+keep-alive 组件是 vue 的内置组件，用于缓存内部组件实例。这样做的目的在于，keep-alive 内部的组件切回时，不用重新创建组件实例，而直接使用缓存中的实例，一方面能够避免创建组件带来的开销，另一方面可以保留组件的状态。
+
+keep-alive 具有 include 和 exclude 属性，通过它们可以控制内部哪些组件进入缓存。另外它还提供了 max 属性，通过它可以设置最大缓存数，当缓存的实例超过该数时，vue 会移除最久没有使用的组件缓存。
+
+受 keep-alive 的影响，其内部所有嵌套的组件都具有两个生命周期钩子函数，分别是 `activated` 和 `deactivated`，它们分别在组件激活和失活时触发。第一次 `activated` 触发是在 `moutend` 之后。
+
+在具体的实现上，keep-alive 在内部维护了一个 key 数组和一个缓存对象。
+
+```js
+// keep-alive 内部的生命周期函数
+created() {
+    this.cache = Object.create(null)
+    this.keys = []
+}
+```
+
+key 数组记录目前缓存的组件 key 值，如果组件没有指定 key 值，则会为其自动生成一个唯一的 key 值。
+
+cache 对象以 key 值为键，vnode 为值，用于缓存组件对应的虚拟 DOM。
+
+在 keep-alive 的渲染函数中，其基本逻辑是判断当前渲染的 vnode 是否有对应的缓存，如果有，从缓存中读取到对应的组件实例，如果没有则将其缓存。
+
+当缓存数量超过 max 数值时，keep-alive 会移除掉 key 数组的第一个元素。
+
+```js
+render() {
+    const slot  = this.$slots.default; // 获取默认插槽
+    const vnode = getFirstComponentChild(slot); // 得到插槽中的第一个组件的的vnode
+    const name  = getComponentName(vnode.componentOptions); // 获取组件的名字
+    const { cache, keys } = this; // 获取当前的缓存对象和key数组
+    const key =  ...; // 获取组件的key值，若没有，会按照规则自动生成
+    if (cache[key]) {
+        // 有缓存，重用组件实例
+        vnode.componentInstance = cache[key].componentInstance
+        remove(keys, key); // 删除key
+        // 将 key 加入到数组末尾，这样是为了保证最近使用的组件在数组中靠后，反之靠前
+        keys.push(key);
+    } else {
+        // 无缓存，进行缓存
+        cache[key] = vnode
+        keys.push(key)
+        if (this.max && keys.length > parseInt(this.max)) {
+            // 超过最大缓存数量，移除第一个 key 对应的缓存
+            pruneCacheEntry(cache, keys[0], keys, this._vnode);
+        }
+    }
+    return vnode;
+}
+```
+
+# 11. vue 节点销毁
+
+[vue 节点销毁的时候做了些什么？](https://juejin.cn/post/6844904116666236942#heading-1)
+
+1. 劫持的 set 触发了数据 deps 内所有关联的 watcher 的更新，接着触发组件的 update 从而进行新旧节点的 patch 进行相应的 dom 更新，dom 更新过程中就会存在节点的删除
+
+2. 依次执行ref、director、transition、的remove或者destroy钩子
+
+3. 执行组件的 $destroy 函数
+
+4. 触发我们自己编写的 beforeDestroy 生命周期函数
+
+5. 清除 vnode 子节点，接着清除 watchers 所有对应的依赖
+
+6. 针对组件递归调用销毁
+
+7. 触发 destroyed 生命周期函数
+
+8. 所以我们组件的销毁执行顺序为：
+
+   > 父beforeDestroy > 子beforeDestroy > 子destroy > 父destroy
+
+9. 再下来执行 $off 函数
+
+10. 将 _events 置空
+
+11. 清除相关节点的引用
+
+# 12. 长列表优化
+
+```vue
+<template>
+	<div class="recycle-scroller-container" ref="container" >
+        <div class="recycle-scroller-wrapper" :style="{ height: `${totalSize}px` }">
+            <div
+                 class="recycle-scroller-item"
+                 v-for="poolItem in pool"
+                 :key="poolItem.item[keyField]"
+                 :style="{ transform: `translateY(${poolItem.position}px)` }"
+             >
+                <slot :item="poolItem.item"></slot>
+    		</div>
+    	</div>
+    </div>
+</template>
+
+<script>
+    // 滚动过快时，由于JS来不及执行，会出现空白，所以提前画好前后十条内容
+    const prev = 10, next = 10;
+    export default {
+        props: {
+            // 数据的数组
+            items: {
+                type: Array,
+                default: () => [],
+            },
+            // 每条数据的高度
+            itemSize: {
+                type: Number,
+                default: 0,
+            },
+            // 给我的 items 数组中，每个对象哪个属性代表唯一且稳定的编号
+            keyField: {
+                type: String,
+                default: 'id'
+            }
+        },
+        data() {
+            return {
+                // { item: 原始数据, position: 该数据对应的偏移位置 }
+                pool: [], // 渲染池，保存当前需要渲染的数据
+            }
+        },
+        computed: {
+          totalSize() {
+              return this.items.length * this.itemSize; // 总高度
+          }  
+        },
+        mounted() {
+            this.setPool();
+            window.vm = this;
+        },
+        methods: {
+            setPool() {
+                const scrollTop = this.$refs.container.scrollTop;
+                const height = this.$refs.container.clientHeight;
+                let startIndex = Math.floor(scrollTop / this.itemSize);
+                let endIndex = Math.ceil((scrollTop + height) / this.itemSize);
+                startIndex -= prev;
+                if (startIndex < 0) {
+                    startIndex = 0;
+                }
+                endIndex += next;
+                const startPos = startIndex * this.itemSize
+                this.pool = this.items.slice(startIndex, endIndex).map((it, i) => ({
+                    item: it,
+                    position: startPos + i * this.itemSize,
+                }))
+            }
+        }
+    }
+</script>
+
+<style>
+    .recycle-scroller-container {
+        /* 固定高度 */
+        height: 500px;
+        overflow: auto;
+    }
+    .recycle-scroller-wrapper {
+        position: relative;
+    }
+    .recycle-scroller-item {
+        position: absolute;
+        width: 100%;
+        left: 0;
+        top: 0;
+    }
+</style>
+```
+
