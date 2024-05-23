@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page1</title>
+</head>
+<body>
+  <input type="text" name="" id="msg">
+  <button id="send">page1发送</button>
+  <script>
+    // 建立 websocket 连接
+    var ws = new WebSocket('ws://localhost:3000')
+
+    var send = document.querySelector('#send')
+    var msg = document.querySelector('#msg')
+    send.onclick = function() {
+      if (msg.value.trim() !== '') {
+        ws.send(msg.value.trim())
+      }
+    }
+
+    var count = 1; // 用于计数
+    ws.onopen = function() {
+      ws.onmessage = function(e) {
+        var oP = document.createElement('p')
+        oP.innerHTML = `第${count}次接收到消息：${e.data}`
+        document.body.appendChild(oP)
+        count++
+      }
+    }
+    window.onbeforeunload = function() {
+      ws.onclose()
+    }
+  </script>
+</body>
+</html>

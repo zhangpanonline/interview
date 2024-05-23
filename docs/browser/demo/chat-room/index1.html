@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    const ws = new WebSocket('ws://localhost:9527')
+    ws.onopen = function() {
+      console.log('连接到服务器了')
+      // 发送消息
+      ws.send('客户端发送的消息。')
+    }
+    ws.onmessage = function(e) {
+      console.log(e)
+      console.log(`${e.data}`)
+    }
+    ws.onclose = function() {
+      console.log("连接关闭")
+    }
+    // 关闭连接
+    // ws.close()
+    // 连接状态：0-正在连接中  1-已连接  2-正在关闭  3-已关闭
+    // ws.readyState
+  </script>
+</body>
+</html>
