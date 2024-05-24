@@ -1,25 +1,42 @@
 
-<template></template>
-<script setup>
-import ChatWindow from "./components/ChatWindow.vue";
+<template>
+  <ChatWindow :users="users" :history="history" :me="me" @chat="onChat" />
+</template>
+<script>
+import { io } from "socket.io-client";
+import ChatWindow from "./ChatWindow.vue";
+export default {
+  components: { ChatWindow },
+  data() {
+    return {
+      users: [],
+      history: [],
+      me: "",
+      socket: io("ws://localhost:9528"),
+    };
+  },
+  created() {
+    this.socket.on("$updateUser", (users) => {
+      this.users = users;
+    });
+    this.socket.on("$name", (me) => {
+      this.me = me;
+    });
+    this.socket.on("$history", (history) => {
+      this.history = history;
+    });
+    this.socket.on("$message", (content) => {
+      this.history.push(content);
+    });
+  },
+  unmounted() {
+    this.socket.close();
+  },
+  methods: {
+    onChat({ name, content, date }) {
+      this.history.push({ name, content, date });
+      this.socket.emit("$message", content);
+    },
+  },
+};
 </script>
-
-<style scoped>
-.app {
-  width: 100%;
-  height: 100%;
-  position: fixed;
-  left: 0;
-  top: 0;
-  background: #1e1e1e;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  list-style: none;
-}
-</style>

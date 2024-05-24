@@ -42,7 +42,7 @@ io.on('connection', socket => {
     // 清除用户
     users.delete(username)
     // 广播通知所有用户（含自己）
-    socket.broadcast.emit('$updateUser', [...users])
+    io.emit('$updateUser', [...users])
   })
 })
 
