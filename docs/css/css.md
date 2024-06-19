@@ -1,4 +1,4 @@
-﻿# `BFC`
+﻿# 一、`BFC`
 
 ## 一、防止父元素高度坍塌最典型的四种方案
 
@@ -233,18 +233,16 @@
 
 # 三、渐进式渲染
 
-什么是渐进式渲染？
-
+> **什么是渐进式渲染？**
+>
 > 渐进式渲染，英文全称 `progressive rendering`，也被称之为惰性渲染，指的是为了提高用户感知的加载速度，以尽快的速度来呈现页面的技术。但是这并不是某一项技术的特指，而是一系列技术的集合。
 >
-> 例如：
+> 例如：****
 >
 > - 骨屏架
 > - 图片懒加载
 > - 图片占位符
 > - 资源拆分
-
-## 1. 渐进式渲染
 
 渐进式渲染，英文全称 `progressive rendering`，也被称之为惰性渲染，指的是为了提高用户感知的加载速度，以尽快的速度来呈现页面的技术。
 
@@ -343,3 +341,109 @@
 
 更多的关于渐进式渲染的内容，可以参阅 *MDN*：*https://developer.mozilla.org/zh-CN/docs/Web/Progressive_web_apps/Loading*
 
+-*EOF*-
+
+# 四、渲染性能优化
+
+> **总结一下如何提升或者优化 `CSS` 的渲染性能？
+>
+> CSS 渲染性能的优化来自方方面面，这里列举一些常见的方式：
+>
+> 1. 使用`id`选择器非常高效，因为`id`是唯一的
+>
+> 2. 避免深层次的选择器嵌套
+>
+> 3. 尽量避免使用属性选择器，因为匹配速度慢
+>
+> 4. 使用渐进增强的方案
+>
+>    通常将浏览器前缀置于前面，将标准样式属性置于最后，类似：
+>
+>    ```css
+>    .foo {
+>      -moz-border-radius: 5px;
+>      border-radius: 5px;
+>    }
+>    ```
+>
+> 5. 遵守`CSSLint`规则
+>
+>    ```css
+>    font-faces     　　　  　　不能使用超过5个web字体
+>    import     　　　　　　 　　  禁止使用*@import*
+>    regex-selectors     　　　  禁止使用属性选择器中的正则表达式选择器
+>    universal-selector   　 　　  禁止使用通用选择器*
+>    unqualified-attributes   　　禁止使用不规范的属性选择器
+>    zero-units       　 　　　0后面不要加单位
+>    overqualified-elements   　　使用相邻选择器时，不要使用不必要的选择器
+>    shorthand     　　　　　　　 简写样式属性
+>    duplicate-background-images   相同的url在样式表中不超过一次
+>    ```
+>
+> 6. 不要使用`@import`
+>
+>    使用 `@import` 引入 `CSS` 会影响浏览器的并行下载。使用 `@import` 引用的 `CSS` 文件只有在引用它的那个 `CSS` 文件被下载、解析之后，浏览器才会知道还有另外一个 `CSS` 需要下载，这时才去下载，然后下载后开始解析、构建 `Render Tree` 等一系列操作。
+>
+>    多个 `@import` 会导致下载顺序紊乱。在 `IE` 中，`@import` 会引发资源文件的下载顺序被打乱，即排列在 `@import` 后面的 `JS` 文件先于 `@import` 下载，并且打乱甚至破坏 `@import` 自身的并行下载。
+>
+> 7. 避免过分重排（`Reflow`）
+>
+>    所谓重排就是浏览器重新计算布局位置与大小。常见的重排元素：
+>
+>    ```css
+>    width 
+>    height 
+>    padding 
+>    margin 
+>    display 
+>    border-width 
+>    border 
+>    top 
+>    position 
+>    font-size 
+>    float 
+>    text-align 
+>    overflow-y 
+>    font-weight 
+>    overflow 
+>    left 
+>    font-family 
+>    line-height 
+>    vertical-align 
+>    right 
+>    clear 
+>    white-space 
+>    bottom 
+>    min-height
+>    ```
+>
+> 8. 依赖继承
+>
+>    如果某些属性可以继承，那么自然没有必要在写一遍。
+>
+> 9. 值缩写
+>
+> 10. 避免耗性能的属性
+>
+> 11. 背景图优化合并
+>
+> 12. 文件压缩
+
+参考：[20个CSS性能优化技巧，每个前端都需要知道](https://juejin.cn/post/7263110473942777911#heading-22)
+
+## 1. 加载性能优化
+
+1. 采取公共的CSS文件
+
+   如果使用 `webpack` 进行项目打包，在打包阶段可以使用`mini-css-extract-plugin`提取公共CSS文件，便于缓存以及减少css请求次数。
+
+2. 避免使用 @import
+
+   * 使用 @import 会阻塞浏览器的并行下载，导致加载速度变慢
+   * 
+
+## 2.选择器性能优化
+
+## 3.属性性能优化
+
+## 4.动画性能优化
