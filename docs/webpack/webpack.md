@@ -321,3 +321,149 @@ source map 实际上是一个配置，配置中不仅记录了所有源码内容
 使用 webpack 编译后的代码难以调试，可以通过 devtool 配置来**优化调试体验**。
 
 具体的配置见文档：https://www.webpackjs.com/configuration/devtool/
+
+# 14. webpack 编译过程
+
+webpack 的作用是将源代码编译（构建、打包）成最终代码。
+
+<img src="../../assets/2020-01-09-10-26-15.png" />
+
+## 初始化
+
+此阶段，webpack会将**CLI参数**、**配置文件**、**默认配置**进行融合，形成一个最终的配置对象。
+
+对配置的处理过程是依托一个第三方库```yargs```完成的。
+
+此阶段相对比较简单，主要是为接下来的编译阶段做必要的准备。
+
+目前，可以简单的理解为，初始化阶段主要用于生产一个最终的配置。
+
+## 编译
+
+### 1. 创建chunk
+
+chunk 是 webpack 在内部构建过程中的一个概念，译为`块`，它表示通过某个入口找到的所有依赖的统称。根据入口模块（默认为`./src/index.js`）创建一个 chunk
+
+![](../../assets/2020-01-09-11-54-08.png)
+
+每个chunk都有至少两个属性：
+
+- name：默认为 main
+- id：唯一编号，开发环境和name相同，生产环境是一个数字，从0开始
+
+### 2. 构建所有依赖模块
+
+![](../../assets/2020-01-09-12-32-38.png)
+
+> AST在线测试工具：https://astexplorer.net/
+
+简图
+
+![](../../assets/2020-01-09-12-35-05.png)
+
+### 3. 产生 chunk assets
+
+在第二步完成后，chunk中会产生一个模块列表，列表中包含了**模块id**和**模块转换后的代码**
+
+接下来，webpack会根据配置为chunk生成一个资源列表，即`chunk assets`，资源列表可以理解为是最终生成文件的文件名和文件内容
+
+![](../../assets/2020-01-09-12-39-16.png)
+
+> chunk hash 是根据所有 chunk assets 的内容生成的一个hash字符串
+>
+> hash：一种算法，具体有很多分类，特点是将一个任意长度的字符串转换为一个固定长度的字符串，而且可以保证原始内容不变，产生的hash字符串就不变
+
+简图
+
+![](../../assets/2020-01-09-12-43-52.png)
+
+### 4.合并 chunk assets
+
+将多个chunk的assets合并到一起，并产生一个总的hash
+
+![](../../assets/2020-01-09-12-47-43.png)
+
+## 输出
+
+此步骤非常简单，webpack利用node中的fs模块（文件处理模块），根据编译产生的总的 assets，生成相应的文件。
+
+![](../../assets/2020-01-09-12-54-34.png)
+
+---
+
+## 总过程
+
+![](../../assets/2020-01-09-15-51-07.png)
+
+![](../../assets/2020-01-09-12-32-38.png)
+
+# 15. 入口和出口
+
+> node中对于 ./ 路径分两种情况：
+>
+> 1. 模块化过程中，比如require('./')，表示当前js文件所在目录
+> 2. 在路径处理中，比如 node 命令执行js文件，./ 表示 node 命令运行的目录
+>
+> __dirname：所有情况下，都表示当前运行的js文件所在的目录，它是一个绝对路径
+
+![](../../assets/2020-01-09-15-51-07.png)
+
+> node内置模块 - path: https://nodejs.org/dist/latest-v12.x/docs/api/path.html
+
+## 出口
+
+这里的出口是针对资源列表的文件名或路径的配置
+
+出口通过output进行配置
+
+## 入口
+
+入口真正配置的是 chunk
+
+入口通过entry进行配置
+
+规则：
+
+* name：chunkname
+* hash：总的资源hash，通常用于解决缓存问题
+* chunkhash：使用chunkhash
+* id：使用chunkid，不推荐
+
+**示例：**
+
+```js
+// webpack.config.js
+const path = require('path')
+module.exports = {
+  mode: 'development',
+  // devtool: "source-map",
+  entry: {
+    /**
+     * 入口
+     * 属性名：chunk的名称，属性值：入口模块
+     */
+    main: './src/index.js', // 默认配置
+    a: './src/a.js',
+    b: ['./src/a.js', './src/index.js'], // 启动模块有两个，将这两个模块打包到一个js文件里
+  },
+  /**
+   * 出口
+   */
+  output: {
+    path: path.resolve(__dirname, 'target'), // 必须配置一个绝对路径，表示资源放置的文件夹，默认是 dist
+    /**
+     * filename：配置的合并的js文件的规则
+     * 规则：
+     *    name：      chunkname
+     *    hash：      总的资源hash，通常用于解决缓存问题
+     *    chunkhash: 使用每个chunk自己的hash
+     *    id：       使用chunkid，不推荐，因为开发环境下是chunkname，生产环境下会变成数字
+     */
+    // filename: 'sub/bundle.js'
+    // filename: '[name]_[hash:5].js'
+    filename: '[name]_[chunkhash].js'
+  }
+}
+```
+
+# 16.
