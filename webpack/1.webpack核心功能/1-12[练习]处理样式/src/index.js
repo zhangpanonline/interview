@@ -1,1 +1,2 @@
-import './assets/style.css'
+import res from  './assets/style.css'
+console.log(res)

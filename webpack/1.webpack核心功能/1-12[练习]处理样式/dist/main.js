@@ -93,7 +93,7 @@
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-eval("\n  const style = document.createElement('style')\n  style.innerHTML = `body {\r\n  height: 100vh;\r\n  background: #ccc;\r\n}\r\n`\n  document.head.appendChild(style)\n  \n\n//# sourceURL=webpack:///./src/assets/style.css?");
+eval("\n  const style = document.createElement('style')\n  style.innerHTML = `body {\r\n  height: 100vh;\r\n  background: #ccc;\r\n}\r\n`\n  document.head.appendChild(style)\n  module.exports = `body {\r\n  height: 100vh;\r\n  background: #ccc;\r\n}\r\n`\n  \n\n//# sourceURL=webpack:///./src/assets/style.css?");
 
 /***/ }),
 
@@ -105,7 +105,7 @@ eval("\n  const style = document.createElement('style')\n  style.innerHTML = `bo
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _assets_style_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./assets/style.css */ \"./src/assets/style.css\");\n/* harmony import */ var _assets_style_css__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_assets_style_css__WEBPACK_IMPORTED_MODULE_0__);\n\n\n//# sourceURL=webpack:///./src/index.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _assets_style_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./assets/style.css */ \"./src/assets/style.css\");\n/* harmony import */ var _assets_style_css__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_assets_style_css__WEBPACK_IMPORTED_MODULE_0__);\n\r\nconsole.log(_assets_style_css__WEBPACK_IMPORTED_MODULE_0___default.a)\n\n//# sourceURL=webpack:///./src/index.js?");
 
 /***/ })
 
