@@ -367,10 +367,10 @@
 >
 > ***vueRouter* 有哪几种导航守卫？**
 >
-> - 全局前置/钩子：*beforeEach、beforeR-esolve、afterEach*
+> - 全局前置/钩子：*1beforeEach、5beforeResolve、6afterEach*
 >
-> - 路由独享的守卫：*beforeEnter*
->- 组件内的守卫：*beforeRouteEnter、beforeRouteUpdate、beforeRouteLeave* 
+> - 路由独享的守卫：*3beforeEnter*
+>- 组件内的守卫：*4、7beforeRouteEnter、2beforeRouteUpdate、beforeRouteLeave* 
 > 
 > 
 >
