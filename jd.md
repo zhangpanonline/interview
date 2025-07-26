@@ -20,4 +20,4 @@
 
 ===================
 
-需要补充 axios（请求封装）、vite（性能优化）、uniapp、微信小程序的知识，重点补充 electron 知识。
+需要补充 axios（请求封装）、gsap、vite（性能优化）、uniapp、微信小程序的知识，重点补充 electron 知识。
